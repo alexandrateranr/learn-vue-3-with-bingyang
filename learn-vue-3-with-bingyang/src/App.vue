@@ -1,47 +1,45 @@
-<script setup>
-import HelloWorld from './components/HelloWorld.vue'
-import TheWelcome from './components/TheWelcome.vue'
-</script>
-
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" />
-
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-    </div>
-  </header>
-
-  <main>
-    <TheWelcome />
-  </main>
+  <h1>{{ message }}</h1>
+  <button @click="sortUsersByAge">Sort users by age</button>
+  <button @click="hideInactiveUsers">Hide inactive users</button>
+  <button @click="showFirstTwoUsers">Show first two users</button>
+  <ul>
+    <li v-for="(user, index) in users" :key="user.id">
+      {{ index }} - {{ user.id }} - {{ user.name }} - {{ user.age }} -
+      {{ user.isActive }}
+    </li>
+  </ul>
 </template>
 
+<script setup>
+import { ref } from 'vue'
+
+let message = ref('Hello, Array Change Detection!')
+
+const users = ref([
+  { id: 1001, name: 'John Smith', age: 26, isActive: false },
+  { id: 1002, name: 'Tom Doe', age: 16, isActive: false },
+  { id: 1003, name: 'Frankin Wong', age: 18, isActive: true }
+])
+
+function sortUsersByAge() {
+  users.value.sort((a, b) => a.age - b.age)
+}
+
+// filter is a non-mutating method, so we need to replace the old array
+function hideInactiveUsers() {
+  users.value = users.value.filter((user) => user.isActive)
+}
+
+// slice is a non-mutating method, so we need to replace the old array
+function showFirstTwoUsers() {
+  users.value = users.value.slice(0, 2)
+}
+</script>
+
 <style scoped>
-header {
-  line-height: 1.5;
-}
-
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
+.inactive {
+  color: red;
+  text-decoration: line-through;
 }
 </style>
