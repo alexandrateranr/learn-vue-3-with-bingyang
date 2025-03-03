@@ -1,98 +1,85 @@
 <template>
- <h1>message: {{ message }}</h1>
- <hr>
- <h1>number: {{ number }}</h1>
-<hr />
-<h1>doubleNum(50): {{ doubleNum(50) }}</h1>
-<hr />
-<h1>number * 2 = {{ number * 2 }}</h1>
-<hr />
-<h1>
-  {{ 
-    number > 150 ? 'number is greater than 150' : 'number is less than 150'}}
-</h1>
-<hr>
-<h1 v-text="number"></h1>
-<hr />
-<h1>{{ harry }}</h1>
-<h1>{{ harry.name }}</h1>
-<hr>
-<h1>{{ hogwartsWizards }}</h1>
-<h1>{{ hogwartsWizards[0] }}</h1>
-<hr />
-<h1>{{ rawHtml }}</h1>
-<h1 v-text="rawHtml"></h1>
-<h1 v-html="rawHtml"></h1>
-<hr />
+  <h1>{{ message }}</h1>
+  <button @click="sortUsersByAge">Sort users by age</button>
+  <br />
+  <button @click="hideInactive = !hideInactive">{{ toggleButtonName }}</button>
 
+  <h2>Number of active users (computed property): {{ numberOfActiveUsers }}</h2>
+  <h2>Number of active users (computed property): {{ numberOfActiveUsers }}</h2>
+  <h2>Number of active users (computed property): {{ numberOfActiveUsers }}</h2>
+
+  <h2>
+    Number of active users (method call): {{ computeNumberOfActiveUsers() }}
+  </h2>
+  <h2>
+    Number of active users (method call): {{ computeNumberOfActiveUsers() }}
+  </h2>
+  <h2>
+    Number of active users (method call): {{ computeNumberOfActiveUsers() }}
+  </h2>
+  <table>
+    <tr>
+      <th>Index</th>
+      <th>Id</th>
+      <th>Name</th>
+      <th>Age</th>
+      <th>Operation</th>
+    </tr>
+    <tr v-for="(user, index) in filteredUsers" :key="user.id">
+      <td>{{ index + 1 }}</td>
+      <td>{{ user.id }}</td>
+      <td :class="{ inactive: !user.isActive }">
+        {{ user.name }}
+      </td>
+      <td>{{ user.age }}</td>
+      <td>
+        <button @click="user.isActive = !user.isActive">
+          {{ user.isActive ? 'Deactivate' : 'Restore' }}
+        </button>
+      </td>
+    </tr>
+  </table>
 </template>
 
 <script setup>
-let message = 'Hello, Vue!'
-let number = 50
+import { computed, ref } from 'vue'
 
-function doubleNum(num){
-  return num *2
+let message = ref('Hello, Computed Properties!')
+
+const users = ref([
+  { id: 1001, name: 'John Smith', age: 26, isActive: false },
+  { id: 1002, name: 'Tom Doe', age: 16, isActive: false },
+  { id: 1003, name: 'Frankin Wong', age: 18, isActive: true }
+])
+
+let hideInactive = ref(false)
+
+function sortUsersByAge() {
+  users.value.sort((a, b) => a.age - b.age)
 }
 
-let harry = {
-  id: 1001,
-  name: 'Harry Potter',
-  house: 'Gryffindor',
-  age: 17, // Age during the final battle of Hogwarts
-  wand: {
-    core: 'Phoenix feather',
-    wood: 'Holly'
-  }
+let toggleButtonName = computed(() =>
+  hideInactive.value ? 'Show all' : 'Hide inactive'
+)
+
+let numberOfActiveUsers = computed(() => {
+  console.log('computed property')
+  return users.value.filter((user) => user.isActive).length
+})
+
+let computeNumberOfActiveUsers = () => {
+  console.log('method call')
+  return users.value.filter((user) => user.isActive).length
 }
-const hogwartsWizards = [
-  {
-    id: 1001,
-    name: 'Harry Potter',
-    house: 'Gryffindor',
-    age: 17,
-    wand: {
-      core: 'Phoenix feather',
-      wood: 'Holly'
-    }
-  },
-  {
-    id: 1002,
-    name: 'Hermione Granger',
-    house: 'Gryffindor',
-    age: 17,
-    wand: {
-      core: 'Dragon heartstring',
-      wood: 'Vine'
-    }
-  },
-  {
-    id: 1003,
-    name: 'Ron Weasley',
-    house: 'Gryffindor',
-    age: 17,
-    wand: {
-      core: 'Unicorn hair',
-      wood: 'Willow'
-    }
-  },
-  {
-    id: 1004,
-    name: 'Draco Malfoy',
-    house: 'Slytherin',
-    age: 17,
-    wand: {
-      core: 'Dragon heartstring',
-      wood: 'Hawthorn'
-    }
-  }
-]
 
-
-let rawHtml = '<span style="color: red">This should be red.</span>'
-
+let filteredUsers = computed(() =>
+  hideInactive.value ? users.value.filter((user) => user.isActive) : users.value
+)
 </script>
 
-<style lang="scss" scoped>
-
+<style scoped>
+.inactive {
+  color: red;
+  text-decoration: line-through;
+}
 </style>
